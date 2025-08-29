@@ -35,6 +35,7 @@ axiosInstance.interceptors.response.use(
         const logout = useAuthStore.getState().logoutAuthStore;
         if (logout) {
           await logout({ skipRemote: true });
+          Cookies.remove("jwt");
         }
       } catch (e) {
         console.error("Error during forced logout:", e);

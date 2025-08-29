@@ -8,6 +8,7 @@ export default function CustomSelect({
   onSelect,
   defaultValue = null,
 }) {
+  console.log(options);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(defaultValue);
   const dropdownRef = useRef(null);
@@ -73,7 +74,7 @@ export default function CustomSelect({
                   onChange={(value) => {
                     setDisplayOptions(
                       options.filter((opt) =>
-                        opt.name.toLowerCase().includes(value.toLowerCase())
+                        opt[0].name.toLowerCase().includes(value.toLowerCase())
                       )
                     );
                   }}
@@ -82,15 +83,25 @@ export default function CustomSelect({
               </div>
             )}
 
+            <li key={"no-option"} className="">
+              <button
+                type="button"
+                className="block w-full text-left px-4 py-2 hover:bg-base-200 text-sm h-[48px] rounded-btn"
+                onClick={() => handleSelect(null)}
+              >
+                Lựa chọn rỗng
+              </button>
+            </li>
+
             {displayOptions.map((opt, idx) => {
               return (
-                <li key={opt.id || idx} className="">
+                <li key={opt[0].id || idx} className="">
                   <button
                     type="button"
                     className="block w-full text-left px-4 py-2 hover:bg-base-200 text-sm h-[48px] rounded-btn"
-                    onClick={() => handleSelect(opt)}
+                    onClick={() => handleSelect(opt[0])}
                   >
-                    {opt.name}
+                    {opt[0].name}
                   </button>
                 </li>
               );

@@ -24,9 +24,11 @@ import ThemesSelector from "../components/buttons/ThemeSelector.jsx";
 import Cookies from "js-cookie";
 import CommonRoundedButton from "../components/buttons/CommonRoundedButton.jsx";
 import { useAuthStore } from "../stores/useAuthStore.js";
+import { useNavigate } from "react-router";
 
 const OnboardingPage = () => {
   const { t } = useTranslation("onboardingPage");
+  const navigate = useNavigate();
   const authUser = useAuthStore((s) => s.authUser);
   const setAuthUser = useAuthStore((s) => s.setAuthUser);
   const [nativeLanguageSelection, setNativeLanguageSelection] = useState([]);
@@ -84,6 +86,8 @@ const OnboardingPage = () => {
     useMutation({
       mutationFn: onboardingAPI,
       onSuccess: (data) => {
+        setAuthUser(data?.data);
+        navigate("/");
         showToast({
           message: data?.message || t("toast.onboardingMutation.success"),
           type: "success",
@@ -109,8 +113,8 @@ const OnboardingPage = () => {
 
   const validateOnboardingData = () => {
     const trimmedFormState = deepTrimObj(formState);
-    trimmedFormState.nativeLanguageId = nativeLanguage.id;
-    trimmedFormState.learningLanguageId = learningLanguage.id;
+    trimmedFormState.nativeLanguageId = nativeLanguage?.id;
+    trimmedFormState.learningLanguageId = learningLanguage?.id;
     const onboardingData = {
       bio: trimmedFormState.bio,
       location: trimmedFormState.location,
@@ -165,19 +169,7 @@ const OnboardingPage = () => {
         ...onboardingData,
         attachmentId: presignData.attachmentId,
       };
-      const { data: onboardingDataRes } = await onboardingMutation(payload);
-      console.log("onboardingData", onboardingDataRes);
-      // setAuthUser({
-      //   ...authUser,
-      //   user: {
-      //     ...authUser.user,
-      //     profile: {
-      //       ...authUser.user.profile,
-      //       ...onboardingData,
-      //       profilePic,
-      //     },
-      //   },
-      // });
+      onboardingMutation(payload);
     } catch (error) {
       console.error("Onboarding failed:", error);
       showToast({
