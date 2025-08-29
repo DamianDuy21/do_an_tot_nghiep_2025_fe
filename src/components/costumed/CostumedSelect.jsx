@@ -8,7 +8,6 @@ export default function CustomSelect({
   onSelect,
   defaultValue = null,
 }) {
-  console.log(options);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(defaultValue);
   const dropdownRef = useRef(null);
