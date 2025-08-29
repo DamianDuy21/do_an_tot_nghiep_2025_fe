@@ -114,8 +114,8 @@ const ProfilePage = () => {
 
   const validateOnboardingData = () => {
     const trimmedFormState = deepTrimObj(formState);
-    trimmedFormState.nativeLanguageId = nativeLanguage.id;
-    trimmedFormState.learningLanguageId = learningLanguage.id;
+    trimmedFormState.nativeLanguageId = nativeLanguage?.id;
+    trimmedFormState.learningLanguageId = learningLanguage?.id;
     const onboardingData = {
       bio: trimmedFormState.bio,
       location: trimmedFormState.location,

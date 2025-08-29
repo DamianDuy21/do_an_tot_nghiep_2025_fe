@@ -70,9 +70,9 @@ const FriendsPage = () => {
     const { fullName, nativeLanguage, learningLanguage } = filterData;
     if (currentPage == 1) {
       fetchFriends({
-        fullName,
-        nativeLanguageId: nativeLanguage.id,
-        learningLanguageId: learningLanguage.id,
+        fullName: fullName.trim() || null,
+        nativeLanguageId: nativeLanguage?.id,
+        learningLanguageId: learningLanguage?.id,
         currentPage: currentPage - 1,
       });
     } else {
