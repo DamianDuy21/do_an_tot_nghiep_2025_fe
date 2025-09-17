@@ -17,11 +17,14 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./stores/useAuthStore.js";
 import { useThemeStore } from "./stores/useThemeStore.js";
+import { useLanguageStore } from "./stores/useLanguageStore.js";
 
 const App = () => {
   const authUser = useAuthStore((s) => s.authUser);
   const checkAuthAuthStore = useAuthStore((s) => s.checkAuthAuthStore);
   const isGettingAuthUser = useAuthStore((s) => s.isGettingAuthUser);
+
+  const getLanguages = useLanguageStore((s) => s.getLanguages);
 
   const { theme } = useThemeStore();
 
@@ -32,6 +35,10 @@ const App = () => {
   useEffect(() => {
     checkAuthAuthStore();
   }, [checkAuthAuthStore]);
+
+  useEffect(() => {
+    getLanguages();
+  }, [getLanguages]);
 
   if (isGettingAuthUser) {
     return <CommonPageLoader />;

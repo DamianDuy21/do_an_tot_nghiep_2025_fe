@@ -353,13 +353,13 @@ const ChatsPage = () => {
                       key={index}
                       userKey={index}
                       friend={friend}
-                      selectedId={selectedUser?._id}
+                      selectedId={selectedUser?.id}
                       onClick={(friend) => {
                         setSelectedUser(friend);
                         setIsOpenSearchFriendsInSmallScreen(false);
                       }}
                       isShowAll={isOpenSearchFriendsInSmallScreen}
-                      unseenMessages={unseenMessages[friend._id] || 0}
+                      unseenMessages={unseenMessages[friend.id] || 0}
                     />
                   ))}
                 </div>

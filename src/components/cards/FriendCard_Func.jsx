@@ -1,28 +1,30 @@
-import { LANGUAGE_TO_FLAG } from "../../constants";
+import { FLAG_TO_LANGUAGE, LANGUAGE_TO_FLAG } from "../../constants";
 
 const FriendCard_Func = () => {
   return <div>FriendCard_Func</div>;
 };
 
-export function getLanguageFlag(language) {
-  if (!language) return null;
+export function getLanguageFlag(locale) {
+  if (!locale) return null;
 
-  let langLower = language.toLowerCase();
-  if (language == "Vietnamese") langLower = "vietnamese";
-  else langLower = "english";
-
-  const countryCode = LANGUAGE_TO_FLAG[langLower];
-
-  if (countryCode) {
+  if (locale) {
     return (
       <img
-        src={`https://flagcdn.com/24x18/${countryCode}.png`}
-        alt={`${langLower} flag`}
+        src={`https://flagcdn.com/24x18/${locale}.png`}
+        alt={`${locale} flag`}
         className="h-3 mr-1 inline-block"
       />
     );
   }
   return null;
+}
+
+export function getFlagLanguage(locale) {
+  if (!locale) return null;
+
+  const lang = FLAG_TO_LANGUAGE[locale];
+
+  return lang;
 }
 
 export default FriendCard_Func;

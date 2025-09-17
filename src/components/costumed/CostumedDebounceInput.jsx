@@ -1,16 +1,20 @@
-import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { LoaderIcon, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const CostumedDebounceInput = ({
   type = "text",
   name,
+  defaultValue = "",
   onChange,
   className,
   iconClassName = "",
   placeholder,
+  maxLength = 255,
+  searchIcon = true,
+  isSearching = false,
 }) => {
-  const [searchValue, setSearchValue] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchValue, setSearchValue] = useState(defaultValue);
+  const [debouncedSearch, setDebouncedSearch] = useState(defaultValue);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -34,12 +38,20 @@ const CostumedDebounceInput = ({
           name={name}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          className={`input input-bordered w-full text-sm ${className}`}
+          className={`input input-bordered w-full text-sm pr-12 ${className}`}
           placeholder={placeholder}
+          maxLength={maxLength}
         />
-        <Search
-          className={`size-4 absolute top-[calc(50%-8px)] right-4 opacity-20 ${iconClassName}`}
-        />
+        {searchIcon &&
+          (isSearching ? (
+            <LoaderIcon
+              className={`size-4 animate-spin absolute top-[calc(50%-8px)] right-4 opacity-70 ${iconClassName}`}
+            />
+          ) : (
+            <Search
+              className={`size-4 absolute top-[calc(50%-8px)] right-4 opacity-20 ${iconClassName}`}
+            />
+          ))}
       </div>
     </>
   );

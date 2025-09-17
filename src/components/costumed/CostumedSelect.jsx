@@ -1,6 +1,8 @@
 import { Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import CostumedDebounceInput from "./CostumedDebounceInput";
+import { FLAG_TO_LANGUAGE, LANGUAGES_DATA } from "../../constants";
+import { idToLocale } from "../../lib/utils";
 
 export default function CustomSelect({
   placeholder,
@@ -44,7 +46,7 @@ export default function CustomSelect({
         onClick={() => setOpen((prev) => !prev)}
         className="costumedSelect w-full justify-between flex items-center"
       >
-        {selected?.name || placeholder}
+        {FLAG_TO_LANGUAGE[idToLocale(selected?.id)] || placeholder}
         <svg
           className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
@@ -72,9 +74,11 @@ export default function CustomSelect({
                   name={"searchInput"}
                   onChange={(value) => {
                     setDisplayOptions(
-                      options.filter((opt) =>
-                        opt[0].name.toLowerCase().includes(value.toLowerCase())
-                      )
+                      options.filter((opt) => {
+                        return FLAG_TO_LANGUAGE[idToLocale(opt.id)]
+                          .toLowerCase()
+                          .includes(value.toLowerCase());
+                      })
                     );
                   }}
                   placeholder={"Tìm kiếm..."}
@@ -94,13 +98,13 @@ export default function CustomSelect({
 
             {displayOptions.map((opt, idx) => {
               return (
-                <li key={opt[0].id || idx} className="">
+                <li key={opt.id || idx} className="">
                   <button
                     type="button"
                     className="block w-full text-left px-4 py-2 hover:bg-base-200 text-sm h-[48px] rounded-btn"
-                    onClick={() => handleSelect(opt[0])}
+                    onClick={() => handleSelect(opt)}
                   >
-                    {opt[0].name}
+                    {FLAG_TO_LANGUAGE[idToLocale(opt.id)]}
                   </button>
                 </li>
               );

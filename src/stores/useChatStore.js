@@ -39,7 +39,7 @@ export const useChatStore = create((set, get) => ({
     console.log("Sending message to:", selectedUser, messageData);
     try {
       const { data } = await axiosInstance.post(
-        `/message/send/${selectedUser._id}`,
+        `/message/send/${selectedUser.id}`,
         messageData
       );
 
@@ -69,7 +69,7 @@ export const useChatStore = create((set, get) => ({
     //     return;
     //   }
     //   const isMessageSentFromSelectedUser =
-    //     newMessage.senderId === selectedUser._id;
+    //     newMessage.senderId === selectedUser.id;
     //   if (!isMessageSentFromSelectedUser) {
     //     set((state) => ({
     //       unseenMessages: {
@@ -84,7 +84,7 @@ export const useChatStore = create((set, get) => ({
     //       messages: [...state.messages, newMessage],
     //     }));
     //     try {
-    //       await axiosInstance.put(`/message/mark/${newMessage._id}`);
+    //       await axiosInstance.put(`/message/mark/${newMessage.id}`);
     //     } catch (error) {
     //       console.error("Failed to mark message as seen", error);
     //     }

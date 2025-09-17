@@ -198,3 +198,41 @@ export const LANGUAGE_TO_FLAG = {
   vietnamese: "vn",
   thai: "th",
 };
+
+export const FLAG_TO_LANGUAGE = {
+  gb: "Tiếng Anh",
+  es: "Tiếng Tây Ban Nha",
+  fr: "Tiếng Pháp",
+  de: "Tiếng Đức",
+  cn: "Tiếng Quan Thoại",
+  jp: "Tiếng Nhật",
+  kr: "Tiếng Hàn",
+  in: "Tiếng Hindi",
+  ru: "Tiếng Nga",
+  pt: "Tiếng Bồ Đào Nha",
+  sa: "Tiếng Ả Rập",
+  it: "Tiếng Ý",
+  tr: "Tiếng Thổ Nhĩ Kỳ",
+  nl: "Tiếng Hà Lan",
+  vn: "Tiếng Việt",
+  th: "Tiếng Thái",
+};
+
+export const LANGUAGES_DATA = [
+  { id: "1", locale: "vn" },
+  { id: "2", locale: "gb" },
+  { id: "68b26fe629f59a1a322ae67d", locale: "es" },
+  { id: "68b26fe629f59a1a322ae67e", locale: "fr" },
+  { id: "68b26fe629f59a1a322ae67f", locale: "de" },
+  { id: "68b26fe629f59a1a322ae680", locale: "cn" },
+  { id: "68b26fe629f59a1a322ae681", locale: "jp" },
+  { id: "68b26fe629f59a1a322ae682", locale: "kr" },
+  { id: "68b26fe629f59a1a322ae683", locale: "in" },
+  { id: "68b26fe629f59a1a322ae684", locale: "ru" },
+  { id: "68b26fe629f59a1a322ae685", locale: "pt" },
+  { id: "68b26fe629f59a1a322ae686", locale: "sa" },
+  { id: "68b26fe629f59a1a322ae687", locale: "it" },
+  { id: "68b26fe629f59a1a322ae688", locale: "tr" },
+  { id: "68b26fe629f59a1a322ae689", locale: "nl" },
+  { id: "68b26fe629f59a1a322ae68b", locale: "th" },
+];

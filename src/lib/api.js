@@ -3,6 +3,10 @@ import Cookies from "js-cookie";
 import { axiosInstance } from "./axiosInstance";
 
 // AUTH
+export const getLanguagesAPI = async () => {
+  const response = await axiosInstance.get("/category/native-languages");
+  return response.data;
+};
 export const getNativeLanguagesAPI = async () => {
   const response = await axiosInstance.get("/category/native-languages");
   return response.data;
@@ -176,6 +180,37 @@ export const acceptFriendRequestAPI = async (requestId) => {
 
 export const rejectFriendRequestAPI = async (requestId) => {
   const response = await axiosInstance.put(`/friends/${requestId}/reject`);
+  return response.data;
+};
+
+export const getNotificationsAPI = async (args = {}) => {
+  const { currentPage = 0, pageSize = 10 } = args;
+  const response = await axiosInstance.get("/notifications", {
+    params: {
+      currentPage,
+      pageSize,
+    },
+  });
+  return response.data;
+};
+
+export const acceptNotificationAPI = async (notificationId) => {
+  const response = await axiosInstance.put(
+    `/notifications/${notificationId}/status`,
+    {
+      status: 1,
+    }
+  );
+  return response.data;
+};
+
+export const deleteNotificationAPI = async (notificationId) => {
+  const response = await axiosInstance.put(
+    `/notifications/${notificationId}/status`,
+    {
+      status: 2,
+    }
+  );
   return response.data;
 };
 

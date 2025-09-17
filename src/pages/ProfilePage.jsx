@@ -27,11 +27,13 @@ import {
   getProfilePicUrl,
 } from "../lib/utils.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
+import { useLanguageStore } from "../stores/useLanguageStore.js";
 
 const ProfilePage = () => {
   const authUser = useAuthStore((s) => s.authUser);
-  console.log("Auth user in ProfilePage:", authUser);
   const setAuthUser = useAuthStore((s) => s.setAuthUser);
+
+  const languages = useLanguageStore((s) => s.languages);
 
   const { t } = useTranslation("profilePage");
 
@@ -56,34 +58,6 @@ const ProfilePage = () => {
   const [learningLanguage, setLearningLanguage] = useState(
     authUser?.learningLanguage || ""
   );
-
-  const { mutate: getNativeLanguagesMutation } = useMutation({
-    mutationFn: getNativeLanguagesAPI,
-    onSuccess: (data) => {
-      setNativeLanguageSelection(data?.data);
-    },
-    onError: (error) => {
-      showToast({
-        message:
-          error.response.data.message || "Failed to fetch native languages",
-        type: "error",
-      });
-    },
-  });
-
-  const { mutate: getLearningLanguagesMutation } = useMutation({
-    mutationFn: getLearningLanguagesAPI,
-    onSuccess: (data) => {
-      setLearningLanguageSelection(data?.data);
-    },
-    onError: (error) => {
-      showToast({
-        message:
-          error.response.data.message || "Failed to fetch learning languages",
-        type: "error",
-      });
-    },
-  });
 
   const { mutateAsync: updateProfileMutation, isPending: isUpdatingProfile } =
     useMutation({
@@ -188,10 +162,12 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    getNativeLanguagesMutation();
-    getLearningLanguagesMutation();
     setProfilePic(authUser?.profilePic || "");
-  }, []);
+  }, [authUser]);
+  useEffect(() => {
+    setNativeLanguageSelection(languages);
+    setLearningLanguageSelection(languages);
+  }, [languages]);
 
   return (
     <>
@@ -264,6 +240,7 @@ const ProfilePage = () => {
                     value={authUser.email}
                     className="input input-bordered w-full pointer-events-none text-sm"
                     placeholder={t("form.email.placeholder")}
+                    onChange={() => {}}
                   />
                 </div>
                 <div className="form-control">

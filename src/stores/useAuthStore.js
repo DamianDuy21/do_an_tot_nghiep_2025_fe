@@ -3,8 +3,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { getAuthUserAPI, loginAPI, logoutAPI } from "../lib/api.js";
 
-// const BASE_URI = "http://localhost:8000";
-
 export const useAuthStore = create(
   persist(
     (set, get) => ({

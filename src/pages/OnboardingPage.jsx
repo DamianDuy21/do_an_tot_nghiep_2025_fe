@@ -7,8 +7,6 @@ import CostumedSelect from "../components/costumed/CostumedSelect.jsx";
 import { showToast } from "../components/costumed/CostumedToast.jsx";
 import {
   generatePresignedURL,
-  getLearningLanguagesAPI,
-  getNativeLanguagesAPI,
   onboardingAPI,
   putFileToPresignedURL,
 } from "../lib/api";
@@ -22,15 +20,19 @@ import LocaleSwitcher from "../components/buttons/LocaleSwitcher.jsx";
 import ThemesSelector from "../components/buttons/ThemeSelector.jsx";
 
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router";
 import CommonRoundedButton from "../components/buttons/CommonRoundedButton.jsx";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { useNavigate } from "react-router";
+import { useLanguageStore } from "../stores/useLanguageStore.js";
 
 const OnboardingPage = () => {
   const { t } = useTranslation("onboardingPage");
   const navigate = useNavigate();
   const authUser = useAuthStore((s) => s.authUser);
   const setAuthUser = useAuthStore((s) => s.setAuthUser);
+
+  const languages = useLanguageStore((s) => s.languages);
+
   const [nativeLanguageSelection, setNativeLanguageSelection] = useState([]);
   const [learningLanguageSelection, setLearningLanguageSelection] = useState(
     []
@@ -52,40 +54,11 @@ const OnboardingPage = () => {
     authUser?.learningLanguage || ""
   );
 
-  const { mutate: getNativeLanguagesMutation } = useMutation({
-    mutationFn: getNativeLanguagesAPI,
-    onSuccess: (data) => {
-      setNativeLanguageSelection(data?.data);
-    },
-    onError: (error) => {
-      showToast({
-        message:
-          error.response.data.message ||
-          t("toast.getNativeLanguagesMutation.error"),
-        type: "error",
-      });
-    },
-  });
-
-  const { mutate: getLearningLanguagesMutation } = useMutation({
-    mutationFn: getLearningLanguagesAPI,
-    onSuccess: (data) => {
-      setLearningLanguageSelection(data?.data);
-    },
-    onError: (error) => {
-      showToast({
-        message:
-          error.response.data.message ||
-          t("toast.getLearningLanguagesMutation.error"),
-        type: "error",
-      });
-    },
-  });
-
   const { mutateAsync: onboardingMutation, isPending: isOnboarding } =
     useMutation({
       mutationFn: onboardingAPI,
       onSuccess: (data) => {
+        console.log(data);
         setAuthUser(data?.data);
         navigate("/");
         showToast({
@@ -180,9 +153,6 @@ const OnboardingPage = () => {
   };
 
   useEffect(() => {
-    getNativeLanguagesMutation();
-    getLearningLanguagesMutation();
-
     const idx = Math.floor(Math.random() * 10) + 1; // generate a num between 1-10
     const randomAvatar = `${idx}.png`;
     getLocalImageAsFile(randomAvatar).then((file) => {
@@ -190,9 +160,15 @@ const OnboardingPage = () => {
     });
   }, []);
 
+  useEffect(() => {
+    setNativeLanguageSelection(languages);
+    setLearningLanguageSelection(languages);
+    handleRandomAvatar();
+  }, [languages]);
+
   return (
     <>
-      <div className="min-h-screen  flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="card bg-base-200 w-full max-w-3xl shadow-lg">
           <div className="card-body p-8 pb-4">
             <h1 className="text-3xl font-bold text-center mb-4">
@@ -290,24 +266,7 @@ const OnboardingPage = () => {
                       {t("form.nativeLanguage.label")}
                     </span>
                   </label>
-                  {/* <select
-                    name="nativeLanguage"
-                    value={formState.nativeLanguage}
-                    onChange={(e) =>
-                      setFormState({
-                        ...formState,
-                        nativeLanguage: e.target.value,
-                      })
-                    }
-                    className="select select-bordered w-full custom-select"
-                  >
-                    <option value="">Select your native language</option>
-                    {LANGUAGES.map((lang) => (
-                      <option key={`native-${lang}`} value={lang.toLowerCase()}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select> */}
+
                   <CostumedSelect
                     placeholder={t("form.nativeLanguage.placeholder")}
                     options={nativeLanguageSelection}
@@ -322,27 +281,7 @@ const OnboardingPage = () => {
                       {t("form.learningLanguage.label")}
                     </span>
                   </label>
-                  {/* <select
-                    name="learningLanguage"
-                    value={formState.learningLanguage}
-                    onChange={(e) =>
-                      setFormState({
-                        ...formState,
-                        learningLanguage: e.target.value,
-                      })
-                    }
-                    className="select select-bordered w-full"
-                  >
-                    <option value="">Select language you're learning</option>
-                    {LANGUAGES.map((lang) => (
-                      <option
-                        key={`learning-${lang}`}
-                        value={lang.toLowerCase()}
-                      >
-                        {lang}
-                      </option>
-                    ))}
-                  </select> */}
+
                   <CostumedSelect
                     placeholder={t("form.learningLanguage.placeholder")}
                     options={learningLanguageSelection}

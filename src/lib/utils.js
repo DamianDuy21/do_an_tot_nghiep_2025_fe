@@ -1,3 +1,5 @@
+import { LANGUAGES_DATA } from "../constants";
+
 export const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 export const deepTrimObj = (obj) => {
   if (typeof obj !== "object" || obj === null) return obj;
@@ -78,4 +80,35 @@ export const getProfilePicUrl = (profilePic) => {
   }
 
   return null;
+};
+
+export function formatRelativeTime(createdAt) {
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now - created;
+
+  if (isNaN(created.getTime())) return "";
+  if (diffMs < 0) return "Vừa xong";
+
+  const sec = Math.floor(diffMs / 1000);
+  if (sec < 60) return "Vừa xong";
+
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min} phút trước`;
+
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} giờ trước`;
+
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day} ngày trước`;
+
+  const month = Math.floor(day / 30);
+  if (month < 12) return `${month} tháng trước`;
+
+  const year = Math.floor(day / 365);
+  return `${year} năm trước`;
+}
+
+export const idToLocale = (id) => {
+  return LANGUAGES_DATA.find((lang) => lang.id == id)?.locale;
 };

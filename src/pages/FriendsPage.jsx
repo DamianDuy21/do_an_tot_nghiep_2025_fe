@@ -126,10 +126,6 @@ const FriendsPage = () => {
   };
 
   useEffect(() => {
-    fetchFriends();
-  }, []);
-
-  useEffect(() => {
     const { fullName, nativeLanguage, learningLanguage } = filterData;
     fetchFriends({
       fullName,

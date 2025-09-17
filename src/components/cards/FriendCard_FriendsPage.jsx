@@ -1,15 +1,15 @@
+import { useMutation } from "@tanstack/react-query";
 import { LoaderIcon, X } from "lucide-react";
-import { capitalize } from "../../lib/utils.js";
-import CommonRoundedButton from "../buttons/CommonRoundedButton.jsx";
-import CountAndMessageBadge from "../buttons/CountAndMessageBadge.jsx";
-import { getLanguageFlag } from "./FriendCard_Func.jsx";
-import CostumedModal from "../costumed/CostumedModal.jsx";
 import { useRef } from "react";
 import { deleteFriendAPI } from "../../lib/api.js";
+import { idToLocale } from "../../lib/utils.js";
+import CommonRoundedButton from "../buttons/CommonRoundedButton.jsx";
+import CountAndMessageBadge from "../buttons/CountAndMessageBadge.jsx";
+import CostumedModal from "../costumed/CostumedModal.jsx";
 import { showToast } from "../costumed/CostumedToast.jsx";
-import { useMutation } from "@tanstack/react-query";
+import { getFlagLanguage, getLanguageFlag } from "./FriendCard_Func.jsx";
 
-const FriendCard_v2_FriendsPage = ({ data, onSuccess, onError }) => {
+const FriendCard_v2_FriendsPage = ({ data, onSuccess, onError = () => {} }) => {
   const friend = data.user;
   const friendshipId = data.id;
   const closeRef = useRef(null);
@@ -24,6 +24,7 @@ const FriendCard_v2_FriendsPage = ({ data, onSuccess, onError }) => {
       });
     },
     onError: (error) => {
+      onError();
       showToast({
         message: error?.response?.data?.message || "Failed to delete friend",
         type: "error",
@@ -37,8 +38,10 @@ const FriendCard_v2_FriendsPage = ({ data, onSuccess, onError }) => {
     >
       <div className="card-body p-4 space-y-2">
         <div className="flex items-center gap-3">
-          <div className="avatar size-10 rounded-full">
-            <img src={friend.profilePic} alt={friend.fullName} />
+          <div className="avatar">
+            <div className="w-10 rounded-full">
+              <img src={friend.profilePic} alt={friend.fullName} />
+            </div>
           </div>
 
           <div>
@@ -53,14 +56,15 @@ const FriendCard_v2_FriendsPage = ({ data, onSuccess, onError }) => {
         {friend.bio && <p className="text-sm line-clamp-2">{friend.bio}</p>}
 
         {/* Languages with flags */}
+
         <div className="flex flex-wrap gap-2">
           <span className="badge badge-secondary h-8 px-4 flex items-center gap-1 relative -top-[1px]">
-            {getLanguageFlag(friend.nativeLanguage.name)}
-            Native: {capitalize(friend.nativeLanguage.name)}
+            {getLanguageFlag(idToLocale(friend.nativeLanguage.id))}
+            Native: {getFlagLanguage(idToLocale(friend.nativeLanguage.id))}
           </span>
           <span className="badge badge-outline h-8 px-4 flex items-center gap-1 relative -top-[1px]">
-            {getLanguageFlag(friend.learningLanguage.name)}
-            Learning: {capitalize(friend.learningLanguage.name)}
+            {getLanguageFlag(idToLocale(friend.learningLanguage.id))}
+            Learning: {getFlagLanguage(idToLocale(friend.learningLanguage.id))}
           </span>
         </div>
 

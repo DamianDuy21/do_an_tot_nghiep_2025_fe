@@ -15,14 +15,14 @@ const FriendCard_ChatsPage_Sidebar = ({
       } border-base-300 flex items-center ${
         isShowAll ? "justify-left" : "justify-center"
       } lg:justify-start px-4 cursor-pointer relative ${
-        selectedId === friend._id ? "btn-active" : "hover:bg-base-300"
+        selectedId === friend.id ? "btn-active" : "hover:bg-base-300"
       }`}
       onClick={() => {
         onClick(friend);
       }}
     >
       <div className="flex items-center gap-3 relative">
-        <div className="avatar ">
+        <div className="avatar">
           <div className="w-10 rounded-full">
             <img
               src={

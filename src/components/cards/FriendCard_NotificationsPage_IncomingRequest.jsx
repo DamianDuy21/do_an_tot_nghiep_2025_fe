@@ -1,12 +1,12 @@
+import { useMutation } from "@tanstack/react-query";
 import { Check, LoaderIcon, MapPinIcon, X } from "lucide-react";
-import { capitalize } from "../../lib/utils";
-import CommonRoundedButton from "../buttons/CommonRoundedButton";
-import { getLanguageFlag } from "./FriendCard_Func";
-import CostumedModal from "../costumed/CostumedModal";
 import { useRef } from "react";
 import { acceptFriendRequestAPI, rejectFriendRequestAPI } from "../../lib/api";
+import { idToLocale } from "../../lib/utils";
+import CommonRoundedButton from "../buttons/CommonRoundedButton";
+import CostumedModal from "../costumed/CostumedModal";
 import { showToast } from "../costumed/CostumedToast";
-import { useMutation } from "@tanstack/react-query";
+import { getFlagLanguage, getLanguageFlag } from "./FriendCard_Func";
 
 const FriendCard_NotificationsPage_IncomingRequest = ({
   friend,
@@ -58,15 +58,17 @@ const FriendCard_NotificationsPage_IncomingRequest = ({
     });
   return (
     <div
-      key={friend._id}
+      key={friend.id}
       className={`card bg-base-200 hover:shadow-lg transition-all duration-300 relative ${
         isAccepting || isRejecting ? "pointer-events-none" : ""
       }`}
     >
       <div className="card-body p-4 space-y-2">
         <div className="flex items-center gap-3">
-          <div className="avatar size-10 rounded-full">
-            <img src={friend.profilePic} alt={friend.fullName} />
+          <div className="avatar">
+            <div className="w-10 rounded-full">
+              <img src={friend.profilePic} alt={friend.fullName} />
+            </div>
           </div>
 
           <div>
@@ -83,14 +85,15 @@ const FriendCard_NotificationsPage_IncomingRequest = ({
         {/* {friend.bio && <p className="text-sm line-clamp-2">{friend.bio}</p>} */}
 
         {/* Languages with flags */}
+
         <div className="flex flex-wrap gap-2">
           <span className="badge badge-secondary h-8 px-4 flex items-center gap-1 relative -top-[1px]">
-            {getLanguageFlag(friend.nativeLanguage.name)}
-            Native: {capitalize(friend.nativeLanguage.name)}
+            {getLanguageFlag(idToLocale(friend.nativeLanguage.id))}
+            Native: {getFlagLanguage(idToLocale(friend.nativeLanguage.id))}
           </span>
           <span className="badge badge-outline h-8 px-4 flex items-center gap-1 relative -top-[1px]">
-            {getLanguageFlag(friend.learningLanguage.name)}
-            Learning: {capitalize(friend.learningLanguage.name)}
+            {getLanguageFlag(idToLocale(friend.learningLanguage.id))}
+            Learning: {getFlagLanguage(idToLocale(friend.learningLanguage.id))}
           </span>
         </div>
 

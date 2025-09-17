@@ -1,5 +1,8 @@
 import { Check, ClockIcon, Forward, LoaderIcon, Undo2, X } from "lucide-react";
-import { getIncomingFriendRequestsAPI } from "../lib/api.js";
+import {
+  getIncomingFriendRequestsAPI,
+  getNotificationsAPI,
+} from "../lib/api.js";
 
 import { useEffect, useState } from "react";
 import CommonRoundedButton from "../components/buttons/CommonRoundedButton.jsx";
@@ -7,6 +10,8 @@ import CountBadge from "../components/buttons/CountBadge.jsx";
 import FriendCard_NotificationsPage_IncomingRequest from "../components/cards/FriendCard_NotificationsPage_IncomingRequest.jsx";
 import { showToast } from "../components/costumed/CostumedToast.jsx";
 import NoDataCommon from "../components/noFounds/NoDataCommon.jsx";
+import CommonPagination from "../components/costumed/CostumedPagination.jsx";
+import NotificationCard_NotificationsPage from "../components/cards/NotificationCard_NotificationsPage.jsx";
 
 const NotificationsPage = () => {
   const [isShowMoreFriendRequests, setIsShowMoreFriendRequests] =
@@ -58,25 +63,17 @@ const NotificationsPage = () => {
   };
 
   const handleOnSuccessAcceptNotification = (notification) => {
-    if (notificationsQuantity == (currentPage - 1) * pageSize + 1) {
-      setCurrentPage(currentPage - 1);
-      if (!isShowMoreNotifications) {
-        fetchNotifications({ currentPage: currentPage - 2 });
-      }
-    } else {
-      fetchNotifications({ currentPage: currentPage - 1 });
-    }
-    // setNotifications((prev) =>
-    //   prev.map((n) => {
-    //     if (n.notification._id === notification.notification._id) {
-    //       return {
-    //         ...n,
-    //         notification: { ...n.notification, status: "accepted" },
-    //       };
-    //     }
-    //     return n;
-    //   })
-    // );
+    setNotifications((prev) =>
+      prev.map((n) => {
+        if (n.id === notification.id) {
+          return {
+            ...n,
+            status: "SEEN",
+          };
+        }
+        return n;
+      })
+    );
   };
 
   const handleOnSuccessDeleteNotification = () => {
@@ -144,7 +141,6 @@ const NotificationsPage = () => {
     setIsLoadingIncomingFriendRequests(true);
     try {
       const { data } = await getIncomingFriendRequestsAPI(args);
-      console.log("Incoming friend requests data:", data);
       setIncomingFriendRequests(data.records || []);
       setIncomingFriendRequestsQuantity(data.pagination.totalItems || 0);
     } catch (error) {
@@ -160,10 +156,9 @@ const NotificationsPage = () => {
   const fetchNotifications = async (args = {}) => {
     setIsLoadingNotifications(true);
     try {
-      const data = { records: [], pagination: { totalItems: 0 } };
-      // const { data } = await getNotificationsAPI(args);
-      setNotifications(data.records || []);
-      setNotificationsQuantity(data.pagination.totalItems || 0);
+      const { data } = await getNotificationsAPI(args);
+      setNotifications(data.paginationInfo.records || []);
+      setNotificationsQuantity(data.paginationInfo.pagination.totalItems || 0);
     } catch (error) {
       showToast({
         message: error?.message,
@@ -182,8 +177,15 @@ const NotificationsPage = () => {
   useEffect(() => {
     if (isShowMoreFriendRequests) {
       fetchIncomingFriendRequests({
+        page: currentPage - 1,
+      });
+      return;
+    }
+    if (isShowMoreNotifications) {
+      fetchNotifications({
         currentPage: currentPage - 1,
       });
+      return;
     }
   }, [currentPage]);
 
@@ -264,121 +266,95 @@ const NotificationsPage = () => {
             </>
           )}
           {/* NOTIFICATIONS */}
-          {/* {!isShowMoreFriendRequests ? (
+          {!isShowMoreFriendRequests ? (
             <section
-              className={`space-y-4 ${!isShowMoreNotifications ? "!mt-6" : ""}`}
+              className={`space-y-4 ${
+                isShowMoreNotifications ? "!mt-0" : "mt-6"
+              }`}
             >
               <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4 sm:mb-4">
                 <div className="flex items-center gap-4">
                   <h1 className="text-2xl sm:text-2xl font-bold">Thông báo</h1>
 
-                  <CountBadge
-                    count={notifications.filter((item) => !item.isRead).length}
-                  ></CountBadge>
+                  <CountBadge count={notificationsQuantity}></CountBadge>
                 </div>
 
-                {notifications.length > 3 && (
-                  <>
-                    {!isShowMoreNotifications ? (
-                      <div
-                        className="btn btn-outline btn-sm"
-                        onClick={() => {
-                          setIsShowMoreNotifications(true);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        <Forward className="size-4 " />
-                        <span className="">Xem thêm</span>
-                      </div>
-                    ) : (
-                      <div
-                        className="btn btn-outline btn-sm"
-                        onClick={() => {
-                          setIsShowMoreNotifications(false);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        <Undo2 className="size-4 " />
-                        <span className="">Thu gọn</span>
-                      </div>
-                    )}
-                  </>
+                {!isShowMoreNotifications ? (
+                  <div
+                    className="btn btn-outline btn-sm"
+                    onClick={handleClickShowMoreNotifications}
+                  >
+                    <Forward className="size-4 " />
+                    <span className="">Xem thêm</span>
+                  </div>
+                ) : (
+                  <div
+                    className="btn btn-outline btn-sm"
+                    onClick={handleClickShowLessNotifications}
+                  >
+                    <Undo2 className="size-4 " />
+                    <span className="">Thu gọn</span>
+                  </div>
                 )}
               </div>
 
-              {notifications.length > 0 ? (
-                <div className="space-y-3">
-                  {notifications.map((notification, idx) => {
-                    if (idx >= 3 && !isShowMoreNotifications) {
-                      return null;
-                    }
-                    return (
-                      <div
-                        key={notification._id}
-                        className="card bg-base-200 shadow-sm"
-                      >
-                        <div className={`card-body p-4 pr-[106px]`}>
-                          <div className="flex items-start gap-3">
-                            <div className="avatar mt-1 size-10 rounded-full">
-                              <img
-                                src={notification.recipient.profilePic}
-                                alt={""}
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-sm">
-                                {notification.recipient.fullName}
-                              </h3>
-                              <p className="text-sm mb-2">
-                                {notification.recipient.fullName} accepted your
-                                friend request
-                              </p>
-                              <p className="text-xs flex items-center opacity-70">
-                                <ClockIcon className="h-3 w-3 mr-1" />
-                                <span className="relative -top-[0.5px]">
-                                  Recently
-                                </span>
-                              </p>
-                            </div>
-
-                            {!notification.isRead && (
-                              <CommonRoundedButton
-                                className="absolute top-4 right-14"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <Check className="size-4" />
-                              </CommonRoundedButton>
-                            )}
-
-                            <CommonRoundedButton
-                              className="absolute top-4 right-4"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            >
-                              <X className="size-4" />
-                            </CommonRoundedButton>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+              {isLoadingNotifications ? (
+                <div className="flex justify-center h-[100px] items-center">
+                  <LoaderIcon className="animate-spin size-8" />
                 </div>
               ) : (
                 <>
-                  <NoDataCommon
-                    title={"Không có thông báo"}
-                    content={
-                      "Kết bạn và trò chuyện với bạn bè để nhận thông báo mới."
-                    }
-                  />
+                  {notifications.length > 0 ? (
+                    <div className="space-y-3">
+                      {notifications.map((notification, idx) => {
+                        if (idx >= 3 && !isShowMoreNotifications) {
+                          return null;
+                        }
+                        if (notification)
+                          return (
+                            <div key={notification.id}>
+                              <NotificationCard_NotificationsPage
+                                notification={notification}
+                                user={notification?.userReference || null}
+                                onSuccessAccept={() =>
+                                  handleOnSuccessAcceptNotification(
+                                    notification
+                                  )
+                                }
+                                onSuccessDelete={
+                                  handleOnSuccessDeleteNotification
+                                }
+                                onError={handleOnErrorNotification}
+                              />
+                            </div>
+                          );
+                      })}
+                    </div>
+                  ) : (
+                    <>
+                      <NoDataCommon
+                        title={"Không có thông báo"}
+                        content={
+                          "Kết bạn và trò chuyện với bạn bè để nhận thông báo mới."
+                        }
+                      />
+                    </>
+                  )}
                 </>
               )}
             </section>
-          ) : null} */}
+          ) : null}
         </div>
+
+        {((isShowMoreFriendRequests &&
+          incomingFriendRequestsQuantity > pageSize) ||
+          (isShowMoreNotifications && notificationsQuantity > pageSize)) && (
+          <CommonPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
       </div>
     </>
   );

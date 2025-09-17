@@ -1,9 +1,9 @@
 import { Hexagon, LoaderIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { showToast } from "../components/costumed/CostumedToast.jsx";
-
+import Cookies from "js-cookie";
 import { useLogin } from "../hooks/useLogin.js";
 import { deepTrimObj } from "../lib/utils.js";
 import LocaleSwitcher from "../components/buttons/LocaleSwitcher.jsx";
@@ -48,6 +48,12 @@ const LoginPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log("LoginPage mounted, removing JWT cookie if exists");
+    Cookies.remove("jwt");
+  }, []);
+
   return (
     <>
       <div
