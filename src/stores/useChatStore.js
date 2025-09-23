@@ -13,6 +13,16 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   unseenMessages: {},
 
+  testChat_ChatStore: async () => {
+    try {
+      const socket = useAuthStore.getState().socket;
+      if (!socket) return;
+      socket.emit("testChat", { data: "Hello from client" });
+    } catch (error) {
+      console.error("Failed to test chat:", error);
+    }
+  },
+
   getMessages: async (id) => {
     try {
       set({ messages: [] });
@@ -96,5 +106,19 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("newMessage");
+  },
+
+  subscribeToChat: async () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+
+    socket.on("test", async (data) => {
+      console.log("New message received:", data);
+    });
+  },
+  unsubscribeFromChat: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+    socket.off("test");
   },
 }));

@@ -32,6 +32,8 @@ export const loginAPI = async (loginData) => {
   const response = await axiosInstance.post("/auth/login", loginData);
   const jwt = response.data?.data;
 
+  Cookies.remove("jwt");
+
   Cookies.set("jwt", jwt, {
     expires: 7,
     secure: true,

@@ -2,6 +2,9 @@ import Cookies from "js-cookie";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { getAuthUserAPI, loginAPI, logoutAPI } from "../lib/api.js";
+import { io } from "socket.io-client";
+
+const BASE_URI = "http://localhost:8888";
 
 export const useAuthStore = create(
   persist(
@@ -60,12 +63,18 @@ export const useAuthStore = create(
       },
 
       connectSocket: () => {
-        // const { authUser, socket } = get();
-        // if (!authUser || socket?.connected) return;
-        // const s = io(BASE_URI, { query: { userId: authUser.id } });
-        // s.connect();
-        // set({ socket: s });
-        // s.on("getOnlineUsers", (userIds) => set({ onlineUsers: userIds }));
+        const { authUser, socket } = get();
+        if (!authUser?.isOnboarded || !authUser || socket?.connected) return;
+        const s = io(BASE_URI, {
+          path: "/",
+          query: {
+            token:
+              "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sImlkIjoxLCJlbWFpbCI6ImZha2VVc2VyMEBnbWFpbC5jb20iLCJpYXQiOjE3NTgwMzc1MzEsImV4cCI6MjExODAzNzUzMX0.xpiHFsx2JEMtLCyYBMlSYAA4I6bzApKzYfUxlimI9PE",
+          },
+        });
+        s.connect();
+        set({ socket: s });
+        s.on("getOnlineUsers", (userIds) => set({ onlineUsers: userIds }));
       },
 
       disconnectSocket: () => {

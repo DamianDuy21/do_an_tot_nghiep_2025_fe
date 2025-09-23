@@ -28,7 +28,10 @@ import { useLanguageStore } from "../stores/useLanguageStore.js";
 const OnboardingPage = () => {
   const { t } = useTranslation("onboardingPage");
   const navigate = useNavigate();
+
+  const getLanguages = useLanguageStore((s) => s.getLanguages);
   const authUser = useAuthStore((s) => s.authUser);
+  console.log(authUser);
   const setAuthUser = useAuthStore((s) => s.setAuthUser);
 
   const languages = useLanguageStore((s) => s.languages);
@@ -159,6 +162,10 @@ const OnboardingPage = () => {
       setProfilePic(file);
     });
   }, []);
+
+  useEffect(() => {
+    getLanguages();
+  }, [getLanguages]);
 
   useEffect(() => {
     setNativeLanguageSelection(languages);

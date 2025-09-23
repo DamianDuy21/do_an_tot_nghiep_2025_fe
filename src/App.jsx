@@ -3,7 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import MainLayout from "./layouts/MainLayout.jsx";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import CommonPageLoader from "./components/loaders/CommonPageLoader.jsx";
 import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
 import ChatsPage from "./pages/ChatsPage.jsx";
@@ -18,6 +18,7 @@ import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./stores/useAuthStore.js";
 import { useThemeStore } from "./stores/useThemeStore.js";
 import { useLanguageStore } from "./stores/useLanguageStore.js";
+import { useChatStore } from "./stores/useChatStore.js";
 
 const App = () => {
   const authUser = useAuthStore((s) => s.authUser);
@@ -32,6 +33,12 @@ const App = () => {
 
   const isOnboarding = authUser?.isOnboarded;
 
+  const socket = useAuthStore((s) => s.socket);
+  const subscribeToChat = useChatStore((s) => s.subscribeToChat);
+  const unsubscribeFromMessages = useChatStore(
+    (s) => s.unsubscribeFromMessages
+  );
+
   useEffect(() => {
     checkAuthAuthStore();
   }, [checkAuthAuthStore]);
@@ -39,6 +46,13 @@ const App = () => {
   useEffect(() => {
     getLanguages();
   }, [getLanguages]);
+
+  useEffect(() => {
+    subscribeToChat();
+    return () => {
+      unsubscribeFromMessages();
+    };
+  }, [socket, subscribeToChat]);
 
   if (isGettingAuthUser) {
     return <CommonPageLoader />;
